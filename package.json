@@ -1,0 +1,13 @@
+{
+  "name": "ethereum-nursery",
+  "version": "0.0.1",
+  "description": "A simple example of writing/reading with Ethereum",
+  "author": "Mark Needham",
+  "license": "MIT",
+  "dependencies": {
+    "abi-decoder": "^1.0.9",
+    "truffle-contract": "^3.0.1",
+    "truffle": "^4.0.4",
+    "web3": "^1.0.0-beta.27"
+  }
+}
