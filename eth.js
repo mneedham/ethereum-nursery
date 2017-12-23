@@ -8,6 +8,7 @@ web3 = new Web3(provider);
 
 let votingContract = fs.readFileSync("build/contracts/Voting.json");
 let votingArtifacts = JSON.parse(votingContract);
+abiDecoder.addABI(votingArtifacts.abi);
 
 let Voting = contract(votingArtifacts)
 Voting.setProvider(web3.currentProvider);
@@ -18,24 +19,19 @@ if (typeof Voting.currentProvider.sendAsync !== "function") {
   };
 }
 
-var accountNumber;
 web3.eth.getAccounts().then(accounts => {
-  accountNumber = accounts[0];
-});
-
-Voting.deployed().then(contractInstance => {
-  return contractInstance.vote(0, {from: accountNumber})
+  return Promise.resolve(accounts[0]);
+}).then(accountNumber => {
+  console.log(accountNumber);
+  return Voting.deployed().then(contractInstance => {
+      return contractInstance.vote(0, {from: accountNumber});
+  })
 }).then(transaction => {
-    console.log("Voted lodged. Transaction ID: " + transaction.tx);
-}).catch(err => {
-  console.log(err);
-});
-
-abiDecoder.addABI(votingArtifacts.abi);
-
-web3.eth.getBlock(1, true).then(block => {
-  console.log(block);
+  console.log("Voted lodged. Transaction ID: " + transaction.tx);
+  let blockHash = transaction.receipt.blockHash
+  return web3.eth.getBlock(blockHash, true);
+}).then(block => {
   block.transactions.forEach(transaction => {
     console.log(abiDecoder.decodeMethod(transaction.input));
-  });
-});
+  })
+}).catch(console.log);
