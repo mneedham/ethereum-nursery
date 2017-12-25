@@ -3,7 +3,7 @@ const fs = require("fs"),
       Web3 = require('web3'),
       contract = require("truffle-contract");
 
-let provider = new Web3.providers.HttpProvider("http://localhost:7545");
+let provider = new Web3.providers.HttpProvider("http://localhost:8545");
 web3 = new Web3(provider);
 
 let votingContract = fs.readFileSync("build/contracts/Voting.json");
@@ -24,7 +24,8 @@ web3.eth.getAccounts().then(accounts => {
 }).then(accountNumber => {
   console.log(accountNumber);
   return Voting.deployed().then(contractInstance => {
-      return contractInstance.vote(0, {from: accountNumber});
+      console.log("about to vote");
+      return contractInstance.vote(0, {from: accountNumber, gas: 1000000});
   })
 }).then(transaction => {
   console.log("Voted lodged. Transaction ID: " + transaction.tx);
