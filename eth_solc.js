@@ -3,16 +3,16 @@ const fs = require("fs"),
       Web3 = require('web3'),
       solc = require('solc');
 
-let provider = new Web3.providers.HttpProvider("http://localhost:8545");
-const web3 = new Web3(provider);
-
 const input = fs.readFileSync('contracts/Token.sol');
 const output = solc.compile(input.toString(), 1);
 const bytecode = output.contracts[':Token'].bytecode;
 const abi = JSON.parse(output.contracts[':Token'].interface);
 
-abiDecoder.addABI(abi);
+let provider = new Web3.providers.HttpProvider("http://localhost:8545");
+const web3 = new Web3(provider);
 let Voting = new web3.eth.Contract(abi);
+
+abiDecoder.addABI(abi);
 
 var allAccounts;
 web3.eth.getAccounts().then(accounts => {
@@ -23,8 +23,8 @@ web3.eth.getAccounts().then(accounts => {
     gasPrice: '30000000000000'
   }).on('receipt', receipt => {
     Voting.options.address = receipt.contractAddress;
-    Voting.methods.transfer(accounts[1], 2).send({from: accounts[0]}).then(transaction => {
-      console.log("Transfer done lodged. Transaction ID: " + transaction.transactionHash);
+    Voting.methods.transfer(accounts[1], 10).send({from: accounts[0]}).then(transaction => {
+      console.log("Transfer lodged. Transaction ID: " + transaction.transactionHash);
       let blockHash = transaction.blockHash
       return web3.eth.getBlock(blockHash, true);
     }).then(block => {
